@@ -760,8 +760,6 @@ const App = () => {
           }
           console.log(`Messages for round ${round} of session ${sessionCode} cleared successfully.`);
           
-          await updateQuestion()
-
           await firestore()
             .collection('sessions')
             .doc(sessionCode)
@@ -769,6 +767,8 @@ const App = () => {
               readyUsers: [],
               round: firestore.FieldValue.increment(1),
           });
+
+          await updateQuestion()
 
         }
       } catch (error) {
@@ -935,9 +935,14 @@ const App = () => {
         
         <Text style={[styles.text, { fontSize: 24, textAlign: 'center' }]}>Round {round}/{ROUNDS}</Text>
 
-        {!viewingResults && (round === prevRound) && !submitted && (
+        {!viewingResults && (round === prevRound) && !(submitted && !allSubmitted) && (
           <View style={{ marginVertical: 20 }}>
             <Text style={[styles.text, { fontSize: 24, textAlign: 'center' }]}>{currentQuestion}</Text>
+            </View>
+        )}
+
+        {!viewingResults && (round === prevRound) && !submitted && (
+          <View style={{ marginVertical: 20 }}>
             <TextInput
               placeholder="Enter your answer"
               value={message}
